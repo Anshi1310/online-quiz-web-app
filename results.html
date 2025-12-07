@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Your Quiz Results</h1>
+    </header>
+    <main>
+        <div class="report-card">
+            <div class="report-header">
+                <h2 id="course-title">Course Report</h2>
+                <p id="summary-text">Review how you performed and what to focus on next.</p>
+            </div>
+
+            <div class="report-stats">
+                <div class="stat">
+                    <p>Total Score</p>
+                    <strong id="score-value">0 / 0</strong>
+                </div>
+                <div class="stat">
+                    <p>Accuracy</p>
+                    <strong id="accuracy-value">0%</strong>
+                </div>
+                <div class="stat">
+                    <p>Time Taken</p>
+                    <strong id="time-value">00:00</strong>
+                </div>
+                <div class="stat">
+                    <p>Status</p>
+                    <strong id="status-value">Submitted</strong>
+                </div>
+                <div class="stat">
+                    <p>Points Earned</p>
+                    <strong id="points-value">0</strong>
+                </div>
+                <div class="stat">
+                    <p>Total Points</p>
+                    <strong id="total-points-value">0</strong>
+                </div>
+            </div>
+
+            <section>
+                <h3>Question Breakdown</h3>
+                <div id="question-list" class="question-list"></div>
+            </section>
+
+            <div class="report-actions">
+                <button id="download-report" class="btn">Download Report Card</button>
+                <a href="leaderboard.html" class="btn">Leaderboard</a>
+                <a href="index.html" class="btn">Take Another Quiz</a>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Quiz App. All rights reserved.</p>
+    </footer>
+    <script>
+        const reportCardRaw = sessionStorage.getItem("reportCard");
+        if (!reportCardRaw) {
+            window.location.href = "index.html";
+        }
+
+        const reportCard = JSON.parse(reportCardRaw);
+
+        const courseTitle = document.getElementById("course-title");
+        const summaryText = document.getElementById("summary-text");
+        const scoreValue = document.getElementById("score-value");
+        const accuracyValue = document.getElementById("accuracy-value");
+        const timeValue = document.getElementById("time-value");
+        const statusValue = document.getElementById("status-value");
+        const pointsValue = document.getElementById("points-value");
+        const totalPointsValue = document.getElementById("total-points-value");
+        const questionList = document.getElementById("question-list");
+        const downloadBtn = document.getElementById("download-report");
+
+        courseTitle.textContent = `${reportCard.courseName} Report`;
+        summaryText.textContent = `${reportCard.username}, you answered ${reportCard.score} out of ${reportCard.totalQuestions} questions correctly and earned ${reportCard.pointsEarned} pts.`;
+        scoreValue.textContent = `${reportCard.score} / ${reportCard.totalQuestions}`;
+        accuracyValue.textContent = `${reportCard.accuracy}%`;
+        timeValue.textContent = formatTime(reportCard.timeTaken);
+        statusValue.textContent = reportCard.autoSubmitted ? "Auto-submitted (timer)" : "Submitted manually";
+        pointsValue.textContent = `${reportCard.pointsEarned} pts`;
+        totalPointsValue.textContent = `${reportCard.totalPoints || reportCard.pointsEarned} pts`;
+
+        questionList.innerHTML = "";
+        reportCard.questionResults.forEach((entry, index) => {
+            const card = document.createElement("div");
+            const statusClass = entry.isCorrect ? "correct" : entry.wasSkipped ? "skipped" : "incorrect";
+            card.className = `question-card ${statusClass}`;
+
+            const title = document.createElement("h4");
+            title.textContent = `Q${index + 1}. ${entry.question}`;
+
+            const yourAnswer = document.createElement("p");
+            const yourLabel = document.createElement("strong");
+            yourLabel.textContent = "Your answer: ";
+            yourAnswer.appendChild(yourLabel);
+            yourAnswer.appendChild(document.createTextNode(entry.selectedOption));
+
+            const correctAnswer = document.createElement("p");
+            const correctLabel = document.createElement("strong");
+            correctLabel.textContent = "Correct answer: ";
+            correctAnswer.appendChild(correctLabel);
+            correctAnswer.appendChild(document.createTextNode(entry.correctOption));
+
+            card.appendChild(title);
+            card.appendChild(yourAnswer);
+            card.appendChild(correctAnswer);
+            questionList.appendChild(card);
+        });
+
+        downloadBtn.addEventListener("click", () => {
+            const reportText = buildReportText(reportCard);
+            const blob = new Blob([reportText], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${reportCard.courseId || "quiz"}-report.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        });
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        }
+
+        function buildReportText(report) {
+            const lines = [
+                `Course: ${report.courseName}`,
+                `Score: ${report.score}/${report.totalQuestions}`,
+                `Accuracy: ${report.accuracy}%`,
+                `Time Taken: ${formatTime(report.timeTaken)}`,
+                `Points Earned: ${report.pointsEarned}`,
+                `Total Points: ${report.totalPoints || report.pointsEarned}`,
+                `Submission: ${report.autoSubmitted ? "Auto-submitted" : "Manual"}`
+            ];
+            lines.push("\nQuestion Breakdown:");
+            report.questionResults.forEach((entry, index) => {
+                lines.push(`Q${index + 1}: ${entry.question}`);
+                lines.push(`   Your answer: ${entry.selectedOption}`);
+                lines.push(`   Correct answer: ${entry.correctOption}`);
+            });
+            return lines.join("\n");
+        }
+    </script>
+</body>
+</html>

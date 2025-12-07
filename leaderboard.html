@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Leaderboard</h1>
+        <p>Top quiz performers and their latest point haul.</p>
+    </header>
+    <main class="leaderboard-wrapper">
+        <div class="leaderboard-actions">
+            <a href="home.html" class="btn">Back to Home</a>
+            <a href="index.html" class="btn start-btn">Start New Quiz</a>
+        </div>
+        <section id="leaderboard-board" class="leaderboard-board"></section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Quiz App. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const leaderboardDom = document.getElementById('leaderboard-board');
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+        if (!leaderboard.length) {
+            leaderboardDom.innerHTML = '<p class="empty">Leaderboard is empty. Finish a quiz to add your score!</p>';
+        } else {
+            leaderboardDom.innerHTML = '';
+            leaderboard.forEach((entry, index) => {
+                const card = document.createElement('article');
+                card.className = 'leaderboard-card';
+                card.innerHTML = `
+                    <span class="badge">#${index + 1}</span>
+                    <div class="leader-info">
+                        <h3>${entry.name}</h3>
+                        <p>${entry.course} • ${entry.accuracy}% accuracy</p>
+                        <small>${new Date(entry.date).toLocaleString()}</small>
+                    </div>
+                    <div class="leader-points">
+                        <strong>${entry.points}</strong>
+                        <span>pts</span>
+                    </div>
+                `;
+                leaderboardDom.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
+

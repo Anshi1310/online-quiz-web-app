@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-body">
+    <header class="hero">
+        <div class="hero-content">
+            <p class="eyebrow">AI Guided Learning</p>
+            <h1>Design your quiz journey for every Computer Applications course.</h1>
+            <p class="lead">Track points, climb the leaderboard, and let the AI curate questions that match your goals.</p>
+            <div class="hero-actions">
+                <a href="index.html" class="btn start-btn">Create Quiz</a>
+                <a href="leaderboard.html" class="btn">View Leaderboard</a>
+            </div>
+        </div>
+        <div class="hero-card">
+            <h3 id="welcome-name">Welcome back!</h3>
+            <p id="points-summary">Loading your stats...</p>
+            <div class="quick-stats">
+                <div>
+                    <small>Total Points</small>
+                    <strong id="stat-points">0</strong>
+                </div>
+                <div>
+                    <small>Quizzes</small>
+                    <strong id="stat-quizzes">0</strong>
+                </div>
+                <div>
+                    <small>Best Accuracy</small>
+                    <strong id="stat-accuracy">0%</strong>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="home-main">
+        <section class="pillars">
+            <article>
+                <h3>Personalized Courses</h3>
+                <p>Choose from core Computer Application tracks including Web, Programming, Data, AI, and IT infrastructure.</p>
+            </article>
+            <article>
+                <h3>Point System</h3>
+                <p>Earn points for every correct answer, bonus for speed and accuracy, and redeem bragging rights.</p>
+            </article>
+            <article>
+                <h3>Leaderboard</h3>
+                <p>Compete with peers. Top scores are highlighted so you always know who leads the pack.</p>
+            </article>
+        </section>
+
+        <section class="mini-leaderboard">
+            <header>
+                <h2>Top Performers</h2>
+                <a href="leaderboard.html" class="link">See full leaderboard →</a>
+            </header>
+            <ol id="leaderboard-list"></ol>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Quiz App. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const username = sessionStorage.getItem('username') || 'Guest';
+        const welcomeName = document.getElementById('welcome-name');
+        const pointsSummary = document.getElementById('points-summary');
+        const statPoints = document.getElementById('stat-points');
+        const statQuizzes = document.getElementById('stat-quizzes');
+        const statAccuracy = document.getElementById('stat-accuracy');
+        const leaderboardList = document.getElementById('leaderboard-list');
+
+        welcomeName.textContent = `Welcome back, ${username}!`;
+
+        const statsKey = `quizUser:${username}`;
+        const stats = JSON.parse(localStorage.getItem(statsKey)) || { totalPoints: 0, quizzes: 0, bestAccuracy: 0 };
+
+        statPoints.textContent = stats.totalPoints || 0;
+        statQuizzes.textContent = stats.quizzes || 0;
+        statAccuracy.textContent = `${stats.bestAccuracy || 0}%`;
+        pointsSummary.textContent = stats.quizzes
+            ? `You're averaging ${(stats.totalPoints / stats.quizzes).toFixed(0)} pts per quiz. Keep it up!`
+            : "Kick off your first quiz to start scoring points.";
+
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        if (!leaderboard.length) {
+            const empty = document.createElement('li');
+            empty.textContent = "No entries yet. Be the first to climb the leaderboard!";
+            leaderboardList.appendChild(empty);
+        } else {
+            leaderboard.slice(0, 3).forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="rank">#${index + 1}</span>
+                    <div>
+                        <strong>${entry.name}</strong>
+                        <small>${entry.course} • ${entry.accuracy}% accuracy</small>
+                    </div>
+                    <span class="points">${entry.points} pts</span>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
+

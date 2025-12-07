@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take the Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Quiz in Progress</h1>
+    </header>
+    <main>
+        <div class="quiz-wrapper">
+            <div class="quiz-header">
+                <div id="timer" class="timer"></div>
+                <p id="course-info" class="course-info"></p>
+                <div class="progress-wrapper">
+                    <span id="progress-text">Loading quiz...</span>
+                    <div class="progress-bar">
+                        <span id="progress-fill"></span>
+                    </div>
+                </div>
+                <p id="ai-tip" class="ai-tip"></p>
+            </div>
+
+            <div id="quiz-container" class="quiz-container">
+                <h2 id="question-text">Question goes here...</h2>
+                <form id="quiz-form">
+                    <!-- Options will be dynamically added here -->
+                </form>
+                <div class="quiz-buttons">
+                    <button id="prev-btn" class="btn" type="button" disabled>Previous</button>
+                    <button id="next-btn" class="btn" type="button">Next</button>
+                    <button id="submit-btn" class="btn" type="button" style="display: none;">Submit</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Quiz App. All rights reserved.</p>
+    </footer>
+    <script src="quiz.js"></script>
+</body>
+</html>
+
